@@ -1,4 +1,5 @@
 # LOCALLINK
+![alt text](locallink.webp "LocalLink")
 
 by Elliot Duncan and Kameron Meyer
 
