@@ -1,22 +1,23 @@
 import java.awt.Desktop;
+import java.util.*;
 import java.net.URI;
-import java.util.ArrayList;
 
 public class Business {
     private String name;
-    private String owner;
-    private double starRating;
-    private ArrayList<String> reviews = new ArrayList<String>();
-    private int reviewCount;
     private double coordsX;
     private double coordsY;
+    private double starRating;
+    private int reviewCount;
+    private ArrayList<String> reviews = new ArrayList<String>();
 
-    public void setName(String name) {
+    public Business(String name, double starRating, ArrayList<String> reviews, int reviewCount,
+            double coordsX, double coordsY) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
+        this.starRating = starRating;
+        this.reviews = reviews;
+        this.reviewCount = reviewCount;
+        this.coordsX = coordsX;
+        this.coordsY = coordsY;
     }
 
     public Business(String name) {
@@ -34,9 +35,14 @@ public class Business {
         this.coordsY = coordsY;
     }
 
-    public String getOwner() {
-        return owner;
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+
 
     public double getStarRating() {
         return starRating;
@@ -72,10 +78,11 @@ public class Business {
             System.err.println("Could not open maps!");
         }
     }
-    
+
     @Override
     public String toString() {
-        return String.format("%.1fkm : %s - %.1f Stars - %d reviews", Directory.distance(this, Directory.getUserLocation()), this.name, this.starRating, this.reviewCount);
+        return String.format("%.1fkm : %s - %.1f Stars - %d reviews",
+                Directory.distance(this, Directory.getUserLocation()), this.name, this.starRating, this.reviewCount);
     }
 
     public int getReviewCount() {

@@ -1,30 +1,25 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-// TODO: IO to a file for saving
+import java.util.*;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("WELCOME TO LOCALLINK");
         Scanner sc = new Scanner(System.in);
         setLocation(sc);
 
+        Directory.readList();
         while (!menu(sc)) { }
 
         System.out.println("\033[H\033[2J THANK YOU FOR USING LOCALLINK");
         sc.close();
-        // Directory.setUserLocation(33,-96.65);
-        // Business b = (new Business("White House", 38.898, -77.037));
-        // Business a = (new Business("Eiffel tower", 48.858, 2.294));
-        // Directory.addBusiness(b);
-        // Directory.addBusiness(a);
-        // System.out.println(Directory.orderedByDist());
     }
 
     public static boolean menu(Scanner sc) {
+        Directory.saveList();
         System.out.println("Type a command; type \"help\" for more info; type \"quit\" to quit");
         String input = sc.nextLine();
         switch (input) {
             case "quit":
+                Directory.saveList();
                 return true;
             case "help":
                 printHelp();
@@ -34,6 +29,9 @@ public class Main {
                 break;
             case "add":
                 addBusiness(sc);
+                break;
+            case "remove":
+                removeBusiness(sc);
                 break;
             case "review":
                 leaveReview(sc);
@@ -51,7 +49,7 @@ public class Main {
 
     public static void list(Scanner sc) {
         while (true) {
-            System.out.println("sort by (name, distance)");
+            System.out.println("sort by (name, distance, rating)");
             String mode = sc.nextLine();
             switch (mode) {
                 case "name":
@@ -66,7 +64,7 @@ public class Main {
                     }
                     return;
                 case "rating":
-                    for (Business b : Directory.orderedByRating()){
+                    for (Business b : Directory.orderedByRating()) {
                         System.out.println(b);
                     }
                     return;
@@ -76,42 +74,64 @@ public class Main {
             }
         }
     }
-    public static void view(Scanner sc){
+
+    public static void view(Scanner sc) {
         System.out.println("name of business");
         String n = sc.nextLine();
         Business business = search(n);
-        if (business == null){
+        if (business == null) {
             System.out.println("unable to find business with that name");
             return;
         }
         ArrayList<String> review = business.getReviews();
-        String a = (review.size()>0) ? "|\t"+review.get(0)+"\n" : "";
-        String b = (review.size()>1) ? "|\t"+review.get(1)+"\n" : "";
-        String c = (review.size()>2) ? "|\t"+review.get(2)+"\n" : "";
-        System.out.printf("%s by %s\n%.1f stars - %d reviews\n%s%s%s", business.getName(),
-                business.getOwner(), business.getStarRating(),business.getReviewCount(),a,b,c);
+        String a = (review.size() > 0) ? "|\t" + review.get(0) + "\n" : "";
+        String b = (review.size() > 1) ? "|\t" + review.get(1) + "\n" : "";
+        String c = (review.size() > 2) ? "|\t" + review.get(2) + "\n" : "";
+        System.out.printf("%s\n%.1f stars - %d reviews\n%s%s%s", business.getName(), business.getStarRating(), business.getReviewCount(), a, b, c);
 
     }
-    public static void leaveReview(Scanner sc){
+    public static void removeBusiness(Scanner sc) {
         System.out.println("name of business");
         String n = sc.nextLine();
         Business b = search(n);
-        if (b == null){
+        if (b == null) {
             System.out.println("unable to find business with that name");
             return;
         }
-        System.out.println("how many stars?");
-        int stars = sc.nextInt();
-        sc.nextLine();
+        System.out.printf("removing business \"%s\"\n", n);
+        Directory.removeBusiness(b);
+    }
+    public static void leaveReview(Scanner sc) {
+        System.out.println("name of business");
+        String n = sc.nextLine();
+        Business b = search(n);
+        if (b == null) {
+            System.out.println("unable to find business with that name");
+            return;
+        }
+        int stars = 0;
+
+        while(true){
+            try {
+                System.out.println("how many stars?");
+                stars = sc.nextInt();
+                sc.nextLine();
+                break;
+            } catch (Exception e) {
+                System.out.println("invalid number try again");
+                sc.nextLine();
+                continue;
+            }
+        }
         System.out.println("leave note here:");
         String review = sc.nextLine();
-        b.addReview(stars, ""+stars+" stars - "+review);
-
+        b.addReview(stars, "" + stars + " stars - " + review);
 
     }
-    public static Business search(String n){
-        for (Business b : Directory.orderedByName()){
-            if (b.getName().equals(n)){
+
+    public static Business search(String n) {
+        for (Business b : Directory.orderedByName()) {
+            if (b.getName().equals(n)) {
                 return b;
             }
         }
@@ -132,11 +152,12 @@ public class Main {
             } catch (Exception e) {
                 System.err.println("invalid input");
                 sc.nextLine();
-                continue; 
+                continue;
             }
         }
 
     }
+
     public static void addBusiness(Scanner sc) {
         System.out.println("name: ");
         String name = sc.nextLine();
