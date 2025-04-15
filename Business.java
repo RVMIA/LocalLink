@@ -8,7 +8,7 @@ public class Business {
     private double coordsY;
     private double starRating;
     private int reviewCount;
-    private ArrayList<String> reviews = new ArrayList<String>();
+    private ArrayList<String> reviews = new ArrayList<>();
 
     public Business(String name, double starRating, ArrayList<String> reviews, int reviewCount,
             double coordsX, double coordsY) {
@@ -20,9 +20,6 @@ public class Business {
         this.coordsY = coordsY;
     }
 
-    public Business(String name) {
-        this.name = name;
-    }
 
     public Business(double coordsX, double coordsY) {
         this.coordsX = coordsX;
@@ -38,32 +35,20 @@ public class Business {
     public void setName(String name) {
         this.name = name;
     }
-
     public String getName() {
         return name;
     }
 
+    public double getCoordsX() { return coordsX; }
+    public double getCoordsY() { return coordsY; }
 
-    public double getStarRating() {
-        return starRating;
-    }
-
-    public ArrayList<String> getReviews() {
-        return reviews;
-    }
-
-    public double getCoordsX() {
-        return coordsX;
-    }
-
-    public double getCoordsY() {
-        return coordsY;
-    }
-
+    public double getStarRating() { return starRating; }
+    public ArrayList<String> getReviews() { return reviews; }
     public void addReview(int stars, String reviewText) {
-        starRating = ((starRating * reviewCount) + stars) / (reviewCount + 1);
+        starRating *= reviewCount;
+        starRating += stars;
+        starRating /= ++reviewCount;
         reviews.add(reviewText);
-        reviewCount++;
     }
 
     public String mapsURL() {
@@ -82,7 +67,7 @@ public class Business {
     @Override
     public String toString() {
         return String.format("%.1fkm : %s - %.1f Stars - %d reviews",
-                Directory.distance(this, Directory.getUserLocation()), this.name, this.starRating, this.reviewCount);
+                Directory.distance_km(this, Directory.getUserLocation()), this.name, this.starRating, this.reviewCount);
     }
 
     public int getReviewCount() {
