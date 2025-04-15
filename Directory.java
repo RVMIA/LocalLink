@@ -4,18 +4,22 @@ import java.util.stream.Collectors;
 
 public class Directory {
 
-    private static ArrayList<Business> list = new ArrayList<Business>();
-    private static double userLat;
-    private static double userLong;
+    private static final List<Business> list = new ArrayList<>();
+    private static double userLatitude;
+    private static double userLongitude;
+    private static final int EARTH_RADIUS_METERS = 6371008;
+
+    public static final Comparator<Business> NAME_COMPARATOR = Comparator.comparing(Business::getName);
+    public static final Comparator<Business> DIST_COMPARATOR = (a, b) -> (int) (distance(a, getUserLocation()) - distance(b, getUserLocation()));
+    public static final Comparator<Business> RATING_COMPARATOR = Comparator.comparingDouble(Business::getStarRating).reversed();
 
     public static Business getUserLocation() {
-        Business tmp = new Business(userLat, userLong);
-        return tmp;
+        return new Business(userLatitude, userLongitude);
     }
 
     public static void setUserLocation(double userLat, double userLong) {
-        Directory.userLat = userLat;
-        Directory.userLong = userLong;
+        Directory.userLatitude = userLat;
+        Directory.userLongitude = userLong;
     }
 
     public static void addBusiness(Business b) {
@@ -25,30 +29,25 @@ public class Directory {
         list.remove(b);
     }
 
-    public static ArrayList<Business> orderedByName() {
-        return list.stream().sorted((a, b) -> a.getName().compareTo(b.getName()))
+    public static List<Business> getBusinesses() {
+        return list;
+    }
+
+    public static List<Business> getBusinesses(Comparator<Business> comp) {
+        return list.stream()
+                .sorted(comp)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static ArrayList<Business> orderedByDist() {
-        return list.stream().sorted((a, b) -> (int) (distance(a, getUserLocation()) - distance(b, getUserLocation())))
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public static ArrayList<Business> orderedByRating() {
-        return list.stream().sorted((a, b) -> (int) (b.getStarRating() - a.getStarRating()))
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
 
     public static double distance(Business a, Business b) { // kilos
         // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
-        int EARTH_RADIUS = 6371008; // meters
         double ax = Math.toRadians(a.getCoordsX());
         double bx = Math.toRadians(b.getCoordsX());
         double dy = Math.toRadians(b.getCoordsY() - a.getCoordsY());
 
         double d = Math.acos(Math.sin(ax) * Math.sin(bx) + Math.cos(ax) * Math.cos(bx) * Math.cos(dy));
-        return ((int) (d * EARTH_RADIUS)) / 1e3;
+        return ((int) (d * EARTH_RADIUS_METERS)) / 1e3;
 
     }
 
@@ -69,32 +68,30 @@ public class Directory {
             bw.close();
 
         } catch (Exception e) {
-            System.err.println("error occured:" + e.getMessage());
-            e.printStackTrace();
+            System.err.println("error occurred:" + e.getMessage());
         }
     }
 
     public static void readList(){
         try {
-           BufferedReader br = new BufferedReader(new FileReader("data.txt"));
-           while(true){
-            String name = br.readLine();
-            if(name == null){break;}
-            double x = Double.parseDouble(br.readLine());
-            double y = Double.parseDouble(br.readLine());
-            double rating = Double.parseDouble(br.readLine());
-            int revCount = Integer.parseInt(br.readLine());
-            ArrayList<String> revs = new ArrayList<String>();
-            for (int i = 0; i < revCount; i++) {
-                revs.add(br.readLine());
+            BufferedReader br = new BufferedReader(new FileReader("data.txt"));
+            while(true){
+                String name = br.readLine();
+                if(name == null){break;}
+                double x = Double.parseDouble(br.readLine());
+                double y = Double.parseDouble(br.readLine());
+                double rating = Double.parseDouble(br.readLine());
+                int revCount = Integer.parseInt(br.readLine());
+                ArrayList<String> revs = new ArrayList<>();
+                for (int i = 0; i < revCount; i++) {
+                    revs.add(br.readLine());
+                }
+                Business b = new Business(name, rating, revs, revCount, x, y);
+                Directory.addBusiness(b);
             }
-            Business b = new Business(name, rating, revs, revCount, x, y);
-            Directory.addBusiness(b);
-           }
-           br.close();
+            br.close();
         } catch (Exception e) {
-            System.err.println("error occured:" + e.getMessage());
-            e.printStackTrace();
+            System.err.println("error occurred:" + e.getMessage());
         }
     }
 }
