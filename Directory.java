@@ -2,17 +2,24 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a collection of businesses that can be managed, stored, and retrieved.
+ * It supports functionality to add, remove, sort, and persist business records,
+ * while also allowing users to define and use a reference location.
+ */
 public class Directory {
 
     private static final List<Business> list = new ArrayList<>();
     private static final int EARTH_RADIUS_METERS = 6371008;
     private static final String DATABASE_PATH = "data.txt";
 
+    // user's location
     private static double userLatitude;
     private static double userLongitude;
 
+    // comparisons for the sorting function
     public static final Comparator<Business> NAME_COMPARATOR = Comparator.comparing(Business::getName);
-    public static final Comparator<Business> DIST_COMPARATOR = (a, b) -> (int) (distance_km(a, getUserLocation()) - distance_km(b, getUserLocation()));
+    public static final Comparator<Business> DIST_COMPARATOR = Comparator.comparingDouble(a -> distance_km(a, getUserLocation()));
     public static final Comparator<Business> RATING_COMPARATOR = Comparator.comparingDouble(Business::getStarRating).reversed();
 
     public static Business getUserLocation() {
@@ -33,6 +40,8 @@ public class Directory {
     public static List<Business> getBusinesses() {
         return list;
     }
+
+    // return the list sorted by the given comparator as an arraylist
     public static List<Business> getBusinesses(Comparator<Business> comp) {
         return list.stream()
                 .sorted(comp)
@@ -47,22 +56,24 @@ public class Directory {
         double dy = Math.toRadians(b.getCoordsY() - a.getCoordsY());
 
         double d = Math.acos(Math.sin(ax) * Math.sin(bx) + Math.cos(ax) * Math.cos(bx) * Math.cos(dy));
-        return ((int) (d * EARTH_RADIUS_METERS)) / 1e3;
+        return  (d * EARTH_RADIUS_METERS) / 1e3;
 
     }
 
+
+    // write list to databse file
     public static void saveList() {
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(DATABASE_PATH));
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(DATABASE_PATH)))
+        {
             for (Business businessToWrite : Directory.list) {
                 writeBusinessToFile(businessToWrite, bufferedWriter);
             }
-            bufferedWriter.close();
 
         } catch (Exception e) {
             System.err.println("error occurred:" + e.getMessage());
         }
     }
+
     private static void writeBusinessToFile(Business b, BufferedWriter bw) throws IOException {
         bw.write(b.getName() + "\n");
         bw.write(b.getCoordsX() + "\n");
@@ -74,12 +85,10 @@ public class Directory {
             bw.write(s + "\n");
     }
 
-
+    //read business from file
     public static void readList(){
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(DATABASE_PATH));
+        try (BufferedReader br = new BufferedReader(new FileReader(DATABASE_PATH))){
             while(readBusiness(br));
-            br.close();
         } catch (Exception e) {
             System.err.println("error occurred:" + e.getMessage());
         }

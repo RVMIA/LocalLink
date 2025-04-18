@@ -2,6 +2,12 @@ import java.awt.Desktop;
 import java.util.*;
 import java.net.URI;
 
+/**
+ * Represents a business entity with properties such as name, geographical
+ * coordinates, star rating, review count, and reviews. Provides functionality
+ * to manage and retrieve these properties, add reviews, and generate a Google Maps
+ * URL for its location.
+ */
 public class Business {
     private String name;
     private double coordsX;
@@ -45,16 +51,18 @@ public class Business {
     public double getStarRating() { return starRating; }
     public ArrayList<String> getReviews() { return reviews; }
     public void addReview(int stars, String reviewText) {
-        starRating *= reviewCount;
+        starRating *= reviewCount; // update the average star rating
         starRating += stars;
         starRating /= ++reviewCount;
-        reviews.add(reviewText);
+        reviews.add(reviewText); // add comment to list
     }
 
+    //makes google maps url
     public String mapsURL() {
         return String.format("https://www.google.com/maps/@?api=1&map_action=map&center=%.5f,%.5f", coordsX, coordsY);
     }
 
+    // opens the url
     public void openMaps() {
         try {
             URI url = new URI(mapsURL());

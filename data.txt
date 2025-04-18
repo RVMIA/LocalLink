@@ -1,14 +1,21 @@
-home
-33.0
--96.65
-3.5
-4
-5 stars - 5
-4 stars - 4
-3 stars - 3
-2 stars - 4
-home2
-10.0
-10.0
+The White House
+38.89770263732397
+-77.03652977362978
+2.5
+2
+5 stars - president :)
+0 stars - president :(
+The Statue of Liberty
+40.68929752403494
+-74.04448698101591
 0.0
-0
+1
+0 stars - geen
+Mount Rushmore
+43.88039454448607
+-103.45378386053817
+3.6666666666666665
+3
+4 stars - Cool big mountain
+2 stars - its just a hill
+5 stars - Very nice place

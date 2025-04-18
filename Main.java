@@ -1,8 +1,16 @@
 import java.util.*;
 
-// TODO: Screenshots of the workings
-// TODO: comments
+/**
+ * The Main class acts as the entry point of the application and provides methods
+ * to manage and interact with a directory of businesses. It includes functionality
+ * for processing user commands, managing businesses, and displaying relevant data.
+ */
 public class Main {
+    /**
+     * The entry point of the application. Initializes scanners and handles user interactions.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         System.out.println("WELCOME TO LOCALLINK");
         Scanner scanner = new Scanner(System.in); // gets input
@@ -15,11 +23,17 @@ public class Main {
         System.out.println("\033[H\033[2J THANK YOU FOR USING LOCALLINK");
     }
 
+    /**
+     * Processes user commands by reading input from the scanner and executing corresponding actions.
+     *
+     * @param scanner The scanner to read user input.
+     * @return True if the application should continue running, false otherwise.
+     */
     public static boolean processUserCommand(Scanner scanner) {
         Directory.saveList(); // saves the current list to the database file
         System.out.println("Type a command; type \"help\" for more info; type \"quit\" to quit");
         String input = scanner.nextLine();
-        switch (input) {
+        switch (input) { // checks for which command was issued
             case "quit":
                 Directory.saveList();
                 return true;
@@ -55,6 +69,10 @@ public class Main {
 
     }
 
+    /**
+     * Prints the list of available commands and their descriptions to the user.
+     * Used to assist the user in navigating the application.
+     */
     public static void printHelp() {
         System.out.println("Commands:");
         System.out.println("\t\"help\": displays this menu");
@@ -68,6 +86,12 @@ public class Main {
         System.out.println("\t\"maps\": opens the business in google maps in your browser");
     }
 
+    /**
+     * Searches for a business by its name.
+     *
+     * @param name The name of the business to search for.
+     * @return The Business object if found, or null if no matching business exists.
+     */
     public static Business search(String name) {
         return Directory.getBusinesses()
                 .stream()
@@ -76,12 +100,24 @@ public class Main {
                 .orElse(null);
     }
 
+    /**
+     * Prompts the user for input and creates a new business based on the provided information.
+     *
+     * @param scanner The scanner used to read user input.
+     * @return A Business object created from user input.
+     */
     public static Business getBusinessFromInput(Scanner scanner){
         System.out.println("name of business");
         String name = scanner.nextLine();
         return search(name);
     }
 
+    /**
+     * Prompts the user for coordinates and returns a Business object.
+     *
+     * @param scanner The scanner used to read user input.
+     * @return A Business object with coordinates.
+     */
     public static Business getCoords(Scanner scanner) {
         while (true) {
             try {
@@ -100,6 +136,11 @@ public class Main {
 
     }
 
+    /**
+     * Adds a new business to the system based on user input.
+     *
+     * @param scanner The scanner used to read user input.
+     */
     public static void addBusiness(Scanner scanner) {
         System.out.println("name: ");
         String name = scanner.nextLine();
@@ -111,6 +152,11 @@ public class Main {
 
     }
 
+    /**
+     * Removes an existing business from the system based on user input.
+     *
+     * @param scanner The scanner used to read user input.
+     */
     public static void removeBusiness(Scanner scanner) {
         Business businessToRemove = getBusinessFromInput(scanner);
         if (businessToRemove == null) {
@@ -121,6 +167,11 @@ public class Main {
         Directory.removeBusiness(businessToRemove);
     }
 
+    /**
+     * Removes an existing business from the system based on user input.
+     *
+     * @param scanner The scanner used to read user input.
+     */
     public static void leaveReview(Scanner sc) {
         Business businessToReview = getBusinessFromInput(sc);
         if (businessToReview == null) {
@@ -134,6 +185,9 @@ public class Main {
             try {
                 System.out.println("how many stars?");
                 stars = sc.nextInt();
+                if (stars < 0 || stars > 5) {
+                    throw new Exception();
+                }
                 sc.nextLine();
                 break;
             } catch (Exception e) {
@@ -148,6 +202,11 @@ public class Main {
 
     }
 
+    /**
+     * Updates the location of the users "home".
+     *
+     * @param sc The scanner used to read user input.
+     */
     public static void setLocation(Scanner sc) {
         try {
             Business temp = getCoords(sc); // get coords
@@ -160,6 +219,11 @@ public class Main {
 
     }
 
+    /**
+     * Displays a visual representation of businesses and their locations on a map.
+     *
+     * @param sc The scanner used to read user input.
+     */
     public static void maps(Scanner sc) {
         Business businessToView = getBusinessFromInput(sc);
         if (businessToView == null) {
@@ -171,6 +235,12 @@ public class Main {
 
     }
 
+    /**
+     * Lists all businesses currently available in the system.
+     * Prompts for ordering
+     *
+     * @param sc The scanner used to read user input.
+     */
     public static void list(Scanner sc) {
         Comparator<Business> businessComparator = null;
         while (businessComparator == null) {
@@ -196,6 +266,11 @@ public class Main {
         }
     }
 
+    /**
+     * Displays detailed information about a specific business.
+     *
+     * @param sc The scanner used to read user input.
+     */
     public static void view(Scanner sc) {
         Business business = getBusinessFromInput(sc);
         if (business == null) {
